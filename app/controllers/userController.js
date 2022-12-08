@@ -1,7 +1,12 @@
 const userModel = require('../models/UserModel')
 
 const userList = async (req, res, next) => {
-  const users = await userModel.find({})
+  const users = await userModel.find(
+    {},
+    {
+      __v: 0,
+    }
+  )
   res.status(200).send({
     success: 200,
     message: 'لیست کاربران دریافت شد .',
