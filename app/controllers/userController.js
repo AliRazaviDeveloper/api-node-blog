@@ -65,8 +65,22 @@ const getUser = async (req, res, next) => {
   }
 }
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    await userModel.deleteOne({ _id: id })
+    res.send({
+      status: 200,
+      message: 'کاربر مدنظر شما با موفقیت حذف شد .',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   userList,
   addUser,
   getUser,
+  deleteUser,
 }
