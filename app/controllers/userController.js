@@ -72,6 +72,29 @@ const deleteUser = async (req, res, next) => {
     res.send({
       status: 200,
       message: 'کاربر مدنظر شما با موفقیت حذف شد .',
+      result: id,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { n, nModified } = await userModel.updateOne(
+      { _id: id },
+      { ...req.body }
+    )
+
+    if (n === 0 || nModified === 0)
+      throw new Error(
+        'مشکل در عملیات بروزرسانی رخ داده است مجددا تلاش فرمایید .'
+      )
+
+    res.send({
+      status: 200,
+      message: 'عملیات بروزرسانی با موفقیت انجام گرفت .',
     })
   } catch (error) {
     next(error)
@@ -83,4 +106,5 @@ module.exports = {
   addUser,
   getUser,
   deleteUser,
+  updateUser,
 }
