@@ -45,7 +45,28 @@ const addUser = async (req, res, next) => {
   }
 }
 
+const getUser = async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    const user = await userModel.findOne({ _id: id }, { __v: 0 })
+    if (!user)
+      return res.status(404).send({
+        code: 'error',
+        status: 404,
+        message: 'کاربری با این شناسه یافت نشد .',
+      })
+    res.status(200).send({
+      status: 200,
+      result: user,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   userList,
   addUser,
+  getUser,
 }
