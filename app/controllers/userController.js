@@ -1,17 +1,42 @@
 const userModel = require('../models/UserModel')
 
 const userList = async (req, res, next) => {
-  const users = await userModel.find(
-    {},
-    {
-      __v: 0,
-    }
-  )
-  res.status(200).send({
-    success: 200,
-    message: 'لیست کاربران دریافت شد .',
-    result: users,
-  })
+  try {
+    // currentPage offset perpage
+    const userCount = await userModel.count()
+    const page = req.query.page || 1
+    const perpage = 1
+    const offset = (page - 1) * perpage
+    const totalPages = userCount / perpage
+    const users = await userModel
+      .find(
+        {},
+        {
+          __v: 0,
+        }
+      )
+      .limit(perpage)
+      .skip(offset)
+    res.status(200).send({
+      success: 200,
+      message: 'لیست کاربران دریافت شد .',
+      result: users,
+      meta: {
+        page: parseInt(page),
+        pages: totalPages,
+        next: `${
+          nextPage(page, totalPages)
+            ? `${process.env.APP_URL}/api/v1/users?page=${parseInt(page) + 1}`
+            : null
+        }`,
+        perv: prevPage(page)
+          ? `${process.env.APP_URL}/api/v1/users?page=${parseInt(page) - 1}`
+          : null,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
 }
 
 const addUser = async (req, res, next) => {
@@ -99,6 +124,14 @@ const updateUser = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+const nextPage = (page, totalPages) => {
+  return page < totalPages
+}
+
+const prevPage = (page) => {
+  return page > 1
 }
 
 module.exports = {
